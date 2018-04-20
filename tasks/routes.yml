@@ -28,3 +28,4 @@
       apikey: "{{ kong_app_admin_apikey }}"
     status_code: 204
   with_items: "{{ kong_app_service_routes_check.json.data }}"
+  when: not kong_app_service_routes_check|skipped

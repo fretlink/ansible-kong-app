@@ -9,8 +9,8 @@
 
 - name: Setup plugin
   uri:
-    url: "{{ kong_app_admin_url }}/{{ (current_config.id == '') | ternary('services/' ~ kong_app_service_name ~ '/plugins','plugins/' ~ current_config.id) }}"
-    method: "{{ (current_config.id == '') | ternary ('POST', 'PATCH') }}"
+    url: "{{ kong_app_admin_url }}/{{ exists_plugin | ternary('services/' ~ kong_app_service_name ~ '/plugins','plugins/' ~ current_config.id) }}"
+    method: "{{ exists_plugin | ternary ('POST', 'PATCH') }}"
     body: "{{ plugin | combine(current_body)  | to_json }}"
     headers:
       apikey: "{{ kong_app_admin_apikey }}"
@@ -24,3 +24,5 @@
     current_id_hash:
       id: "{{ current_config.id }}"
     current_body: "{{ (current_id_hash.id == '') | ternary({}, current_id_hash) }}"
+    exists_plugin: "{{ current_id_hash.id == '' }}"
+  when: not kong_app_service_plugins_check|skipped
