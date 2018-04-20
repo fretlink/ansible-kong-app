@@ -7,15 +7,15 @@
     status_code: 200,404
   register: kong_app_check_service
 
-#- name: Update or Create service
-#  uri:
-#    url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}"
-#    method: "{{ (kong_app_check_service.status_code == 404) | ternary ('POST', 'PATCH') }}"
-#    body: "{{ kong_app_service_body | to_json }}"
-#    headers:
-#      apikey: "{{ kong_app_admin_apikey }}"
-#      Content-Type: application/json
-#    status_code: 200,201
+- name: Update or Create service
+  uri:
+    url: "{{ kong_app_admin_url }}/services/{{ (kong_app_check_service.status == 404) | ternary('', kong_app_service_name) }}"
+    method: "{{ (kong_app_check_service.status == 404) | ternary('POST', 'PATCH') }}"
+    body: "{{ kong_app_service_body | to_json }}"
+    status_code: 200,201
+    headers:
+      apikey: "{{ kong_app_admin_apikey }}"
+      Content-Type: application/json
 
 - name: Setup plugins
   import_tasks: plugins.yml

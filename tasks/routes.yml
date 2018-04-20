@@ -3,11 +3,9 @@
     url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}/routes"
     method: GET
     validate_certs: no
+    headers:
+      apikey: "{{ kong_app_admin_apikey }}"
   register: kong_app_service_routes_check
-
-- name: Set routes facts
-  set_fact:
-    kong_app_current_routes: "{{ kong_app_service_routes_check.json |default('{\"data\": []}') | from_json }}"
 
 - name: Setup route
   uri:
@@ -24,9 +22,9 @@
 
 - name: Delete old routes
   uri:
-    url: "{{ kong_app_admin_url }}/services/routes/{{ item.id }}"
+    url: "{{ kong_app_admin_url }}/routes/{{ item.id }}"
     method: DELETE
     headers:
       apikey: "{{ kong_app_admin_apikey }}"
     status_code: 204
-  with_items: "{{ kong_app_current_routes.data }}"
+  with_items: "{{ kong_app_service_routes_check.json.data }}"
