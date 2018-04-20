@@ -1,0 +1,5 @@
+---
+- name: Include kong-app tasks
+  import_tasks: kong-app.yml
+  tags:
+    - kong-app

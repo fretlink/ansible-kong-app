@@ -1,0 +1,28 @@
+- name: Get plugins
+  uri:
+    url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}/plugins"
+    method: GET
+    validate_certs: no
+  register: kong_app_service_plugins_check
+
+- name: Set plugins facts
+  set_fact:
+    kong_app_current_plugins: "{{ kong_app_service_plugins_check.json | default('{}') | from_json }}"
+
+- name: Setup plugin {{ plugin.name }}
+  uri:
+    url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}/plugins"
+    method: "{{ (current_config == {}) | ternary ('POST', 'PATCH') }}"
+    body: "{{ plugin | combine(current_body)  | to_json }}"
+    headers:
+      apikey: "{{ kong_app_admin_apikey }}"
+      Content-Type: application/json
+    status_code: 200,201
+  with_items: "{{ kong_app_plugins }}"
+  loop_control:
+    loop_var: plugin
+  vars:
+    current_config: "{{ kong_app_current_plugins.data | selectattr('name', plugin.name) | first |default({}) }}"
+    current_id_hash:
+      id: "{{ current_config.id | default('')}}"
+    current_body: "{{ (current_id_hash.id == '') | ternary({}, current_id_hash) }}"

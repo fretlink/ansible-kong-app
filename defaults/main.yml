@@ -1,0 +1,4 @@
+---
+kong_app_admin_apikey: ""
+kong_app_plugins: []
+kong_app_routes: []
