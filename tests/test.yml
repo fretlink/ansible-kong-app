@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - role: ansible-kong-app
+      kong_app_admin_url: http://127.0.0.1:8000
+      kong_app_service_name: toto
+      kong_app_service_url: http://example.com

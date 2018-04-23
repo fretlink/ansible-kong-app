@@ -1,0 +1,31 @@
+- name: Get app routes
+  uri:
+    url: "{{ kong_app_admin_url }}/services/{{ service.name }}/routes"
+    method: GET
+    validate_certs: no
+    headers:
+      apikey: "{{ kong_app_admin_apikey }}"
+  register: kong_app_service_routes_check
+
+- name: Setup route
+  uri:
+    url: "{{ kong_app_admin_url }}/services/{{ service.name }}/routes"
+    method: POST
+    body: "{{ route | to_json }}"
+    headers:
+      apikey: "{{ kong_app_admin_apikey }}"
+      Content-Type: application/json
+    status_code: 201
+  with_items: "{{ service.routes | default([]) }}"
+  loop_control:
+    loop_var: route
+
+- name: Delete old routes
+  uri:
+    url: "{{ kong_app_admin_url }}/routes/{{ item.id }}"
+    method: DELETE
+    headers:
+      apikey: "{{ kong_app_admin_apikey }}"
+    status_code: 204
+  with_items: "{{ kong_app_service_routes_check.json.data }}"
+  when: not kong_app_service_routes_check is skipped
