@@ -13,16 +13,17 @@ Role Variables
 
 * `kong_app_admin_url` the kong admin url (mandatory).
 * `kong_app_admin_apikey` the apikey to use kong admin api. Default to ""
-* `kong_app_service_name` the nameof the service to create for this app, mandatory
-* `kong_app_service_url` the url of the backend of the app, mandatory
-* `kong_app_plugins` An array of plugins to activate with their name and config in a dict
-  * `name`
-  * `config`
-* `kong_app_routes` An array of routes to create for this app.
-  * `hosts`
-  * `paths`
-  * `protocols`
-  * `methods`
+* `kong_services` an array of services to setup (default to [])
+  * `name` the name of the service to create for this app, mandatory
+  * `url` the url of the backend of the app, mandatory
+  * `plugins` An array of plugins to activate with their name and config in a dict
+    * `name`
+    * `config`
+  * `routes` An array of routes to create for this service.
+    * `hosts`
+    * `paths`
+    * `protocols`
+    * `methods`
 
 Dependencies
 ------------
@@ -35,10 +36,10 @@ Example Playbook
     - hosts: localhost
       roles:
          - { role: kong-app, kong_app_admin_url: http://localhost:8001,
-             kong_app_service_name: example,
-             kong_app_service_url: http://example.com,
-             kong_app_plugins: [],
-             kong_app_routes: [ { hosts: [my.kong.example], paths: [/] } ]
+             kong_app_services: [ name:example,
+             url: http://example.com,
+             plugins: [],
+             routes: [ { hosts: [my.kong.example], paths: [/] } ]]
            }
 
 License

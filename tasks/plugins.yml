@@ -1,6 +1,6 @@
 - name: Get plugins
   uri:
-    url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}/plugins"
+    url: "{{ kong_app_admin_url }}/services/{{ service.name }}/plugins"
     method: GET
     validate_certs: no
     headers:
@@ -9,14 +9,14 @@
 
 - name: Setup plugin
   uri:
-    url: "{{ kong_app_admin_url }}/{{ exists_plugin | ternary('services/' ~ kong_app_service_name ~ '/plugins','plugins/' ~ current_config.id) }}"
+    url: "{{ kong_app_admin_url }}/{{ exists_plugin | ternary('services/' ~ service.name ~ '/plugins','plugins/' ~ current_config.id) }}"
     method: "{{ exists_plugin | ternary ('POST', 'PATCH') }}"
     body: "{{ plugin | combine(current_body)  | to_json }}"
     headers:
       apikey: "{{ kong_app_admin_apikey }}"
       Content-Type: application/json
     status_code: 200,201
-  with_items: "{{ kong_app_plugins }}"
+  with_items: "{{ service.plugins | default([]) }}"
   loop_control:
     loop_var: plugin
   vars:

@@ -1,6 +1,6 @@
 - name: Get app routes
   uri:
-    url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}/routes"
+    url: "{{ kong_app_admin_url }}/services/{{ service.name }}/routes"
     method: GET
     validate_certs: no
     headers:
@@ -9,14 +9,14 @@
 
 - name: Setup route
   uri:
-    url: "{{ kong_app_admin_url }}/services/{{ kong_app_service_name }}/routes"
+    url: "{{ kong_app_admin_url }}/services/{{ service.name }}/routes"
     method: POST
     body: "{{ route | to_json }}"
     headers:
       apikey: "{{ kong_app_admin_apikey }}"
       Content-Type: application/json
     status_code: 201
-  with_items: "{{ kong_app_routes }}"
+  with_items: "{{ service.routes | default([]) }}"
   loop_control:
     loop_var: route
 

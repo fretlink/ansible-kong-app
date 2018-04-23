@@ -1,4 +1,1 @@
 ---
-kong_app_service_body:
-  name: "{{ kong_app_service_name }}"
-  url: "{{ kong_app_service_url }}"

@@ -1,5 +1,8 @@
 ---
 - name: Include kong-app tasks
-  import_tasks: kong-app.yml
+  include_tasks: kong-app.yml
   tags:
     - kong-app
+  with_items: "{{ kong_services }}"
+  loop_control:
+    loop_var: service
