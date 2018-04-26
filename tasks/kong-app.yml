@@ -1,20 +1,20 @@
 - name: Check if service exists
   uri:
-    url: "{{ kong_app_admin_url }}/services/{{ service.name }}"
+    url: "{{ server.kong_app_admin_url }}/services/{{ service.name }}"
     method: GET
     headers:
-      apikey: "{{ kong_app_admin_apikey }}"
+      apikey: "{{ server.kong_app_admin_apikey }}"
     status_code: 200,404
   register: kong_app_check_service
 
 - name: Update or Create service
   uri:
-    url: "{{ kong_app_admin_url }}/services/{{ exists_service | ternary('', service.name) }}"
+    url: "{{ server.kong_app_admin_url }}/services/{{ exists_service | ternary('', service.name) }}"
     method: "{{ exists_service | ternary('POST', 'PATCH') }}"
     body: "{{ service_body | to_json }}"
     status_code: 200,201
     headers:
-      apikey: "{{ kong_app_admin_apikey }}"
+      apikey: "{{ server.kong_app_admin_apikey }}"
       Content-Type: application/json
   vars:
     exists_service: "{{ kong_app_check_service.status|default(404) == 404 }}"
