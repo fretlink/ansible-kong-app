@@ -16,6 +16,11 @@ Role Variables
   * `services` an array of services to setup (default to [])
     * `name` the name of the service to create for this app, mandatory
     * `url` the url of the backend of the app, mandatory
+    * `upstream` if the url reference an upstream a dict with the configuration
+      * `conf` the configuration as expected by kong for an upstream creataion
+      * `targets` an array of dict defining a target for kong
+        * `target` the host:port to reach the target
+        * `weight` the weight of the target
     * `plugins` An array of plugins to activate with their name and config in a dict
       * `name`
       * `config`

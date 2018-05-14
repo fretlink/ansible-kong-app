@@ -1,3 +1,7 @@
+- name: Upstream Creation
+  import_tasks: upstream.yml
+  when: service.upstream is defined
+
 - name: Check if service exists
   uri:
     url: "{{ server.kong_app_admin_url }}/services/{{ service.name }}"

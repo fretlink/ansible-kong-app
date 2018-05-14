@@ -1,0 +1,55 @@
+- name: Set upstream variable
+  set_fact:
+    upstream: "{{ service.upstream }}"
+
+- name: Check if upstream exists
+  uri:
+    url: "{{ server.kong_app_admin_url }}/upstreams/{{ upstream.conf.name }}"
+    method: GET
+    headers:
+      apikey: "{{ server.kong_app_admin_apikey }}"
+    status_code: 200,404
+  register: kong_app_check_upstream
+
+- name: Update or Create upstream
+  uri:
+    url: "{{ server.kong_app_admin_url }}/upstreams/{{ exists_upstream | ternary('', upstream.conf.name) }}"
+    method: "{{ exists_upstream | ternary('POST', 'PATCH') }}"
+    body: "{{ upstream.conf | to_json }}"
+    status_code: 200,201
+    headers:
+      apikey: "{{ server.kong_app_admin_apikey }}"
+      Content-Type: application/json
+  vars:
+    exists_upstream: "{{ kong_app_check_upstream.status|default(404) == 404 }}"
+
+- name: Get upstream targets
+  uri:
+    url: "{{ server.kong_app_admin_url }}/upstreams/{{ upstream.conf.name }}/targets"
+    method: GET
+    headers:
+      apikey: "{{ server.kong_app_admin_apikey }}"
+  register: kong_app_service_targets_check
+
+- name: Create targets
+  uri:
+    url: "{{ server.kong_app_admin_url }}/upstreams/{{ upstream.conf.name }}/targets"
+    method: POST
+    body: "{{ target | to_json }}"
+    headers:
+      apikey: "{{ server.kong_app_admin_apikey }}"
+      Content-Type: application/json
+    status_code: 201
+  with_items: "{{ upstream.targets | default([]) }}"
+  loop_control:
+    loop_var: target
+
+- name: Delete old targets
+  uri:
+    url: "{{ server.kong_app_admin_url }}/upstreams/{{ upstream.conf.name }}/targets/{{ item.id }}"
+    method: DELETE
+    headers:
+      apikey: "{{ server.kong_app_admin_apikey }}"
+    status_code: 204
+  with_items: "{{ kong_app_service_targets_check.json.data }}"
+  when: not kong_app_service_targets_check is skipped
