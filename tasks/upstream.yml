@@ -50,6 +50,6 @@
     method: DELETE
     headers:
       apikey: "{{ server.kong_app_admin_apikey }}"
-    status_code: 204
+    status_code: 204,404
   with_items: "{{ kong_app_service_targets_check.json.data }}"
   when: not kong_app_service_targets_check is skipped
