@@ -15,7 +15,14 @@ Role Variables
   * `kong_app_admin_apikey` the apikey to use kong admin api. Default to ""
   * `services` an array of services to setup (default to [])
     * `name` the name of the service to create for this app, mandatory
-    * `url` the url of the backend of the app, mandatory
+    * `url` the url of the backend of the app, mandatory. May refer to an upstream by its name (https://upstream\_name/path)
+    * `upstream` if the url reference an upstream a dict with the configuration, optional
+      * `conf` the configuration as expected by kong for an upstream creation
+        * `name` mandatory name for the upstream
+        * `healthchecks` optional healthchecks configuration as expected by kong api
+      * `targets` an array of dict defining a target for kong
+        * `target` the host:port to reach the target (mandatory)
+        * `weight` the weight of the target (optional)
     * `plugins` An array of plugins to activate with their name and config in a dict
       * `name`
       * `config`
