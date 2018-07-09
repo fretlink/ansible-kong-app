@@ -1,20 +1,12 @@
 ---
-language: python
-python: "2.7"
+language: nix
 
 # Use the new container infrastructure
 sudo: false
 
-# Install ansible
-addons:
-  apt:
-    packages:
-    - python-pip
-
 install:
   # Install ansible
-  - pip install ansible
-  - pip install ansible-lint
+  - nix-env -i python2.7-ansible python2.7-ansible-lint
 
   # Check ansible version
   - ansible --version
