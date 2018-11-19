@@ -1,0 +1,1 @@
+{ appAdminApiKey : Text, accessKey : Text }
