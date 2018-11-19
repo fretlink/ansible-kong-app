@@ -7,6 +7,7 @@ sudo: false
 install:
   # Install ansible
   - nix-env -i python2.7-ansible python2.7-ansible-lint
+  - nix-env -if ./dhall-1.18.0.nix
 
   # Check ansible version
   - ansible --version
@@ -19,6 +20,7 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
   - ansible-lint .
   - ansible-playbook tests/test.yml -i tests/inventory -C -D
+  - scripts/dhall_check.sh
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
