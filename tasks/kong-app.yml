@@ -25,6 +25,11 @@
     service_body:
       name: "{{ service.name }}"
       url: "{{ service.url }}"
+  register: kong_service_creation_st
+
+- name: set service id
+  set-fact:
+    kong_current_service_id: "{{ kong_service_creation_st.json.data.id }}"
 
 - name: Setup plugins
   import_tasks: plugins.yml

@@ -26,4 +26,4 @@
     current_body: "{{ (current_id_hash.id == '') | ternary({}, current_id_hash) }}"
     exists_plugin: "{{ current_id_hash.id == '' }}"
   when: not kong_app_service_plugins_check is skipped
-  no_log: true
+  no_log: false
