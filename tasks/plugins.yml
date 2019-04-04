@@ -7,6 +7,23 @@
       apikey: "{{ server.kong_app_admin_apikey }}"
   register: kong_app_service_plugins_check
 
+- name: debug
+  debug:
+    var: kong_app_service_plugins_check
+
+- name: debug2
+  debug:
+    var: current_body
+  vars:
+    current_config: "{{ kong_app_service_plugins_check.json.data | selectattr('name', 'equalto', plugin.name) | first |default({\"id\": ''}) }}"
+    current_id_hash:
+      id: "{{ current_config.id }}"
+    current_body: "{{ (current_id_hash.id == '') | ternary({}, current_id_hash) }}"
+    exists_plugin: "{{ current_id_hash.id == '' }}"
+  with_items: "{{ service.plugins | default([]) }}"
+  loop_control:
+    loop_var: plugin
+
 - name: Setup plugin
   uri:
     url: "{{ server.kong_app_admin_url }}/{{ exists_plugin | ternary('services/' ~ service.name ~ '/plugins','plugins/' ~ current_config.id) }}"
