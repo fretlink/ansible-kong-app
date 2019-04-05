@@ -9,7 +9,7 @@
 
 - name: Setup plugin
   uri:
-    url: "{{ server.kong_app_admin_url }}/{{ exists_plugin | ternary('services/' ~ service.name ~ '/plugins','plugins/' ~ current_config.id) }}"
+    url: "{{ server.kong_app_admin_url }}/{{ exists_plugin | ternary(create_url, update_url) }}"
     method: "{{ exists_plugin | ternary ('POST', 'PATCH') }}"
     body: "{{ plugin | combine(current_body)  | to_json }}"
     headers:
@@ -20,10 +20,74 @@
   loop_control:
     loop_var: plugin
   vars:
-    current_config: "{{ kong_app_service_plugins_check.json.data | selectattr('name', 'equalto', plugin.name) | first |default({\"id\": ''}) }}"
+    create_url: "services/{{ service.name }}/plugins"
+    update_url: "plugins/{{ current_config.id }}"
+    plugins_list: "{{ kong_app_service_plugins_check.json.data }}"
+    current_config: "{{ plugins_list | selectattr('name', 'equalto', plugin.name) | first |default({\"id\": ''}) }}"
     current_id_hash:
       id: "{{ current_config.id }}"
-    current_body: "{{ not current_id_hash.id  | ternary({}, current_id_hash) }}"
+    current_body: "{{ (not current_id_hash.id)  | ternary({}, current_id_hash) }}"
     exists_plugin: "{{ not current_id_hash.id  }}"
   when: not kong_app_service_plugins_check is skipped
+  ignore_errors: true
+  no_log: true
+  register: kong_plugin_update_st
+
+- name: Retry failed (deletion)
+  uri:
+    url: "{{ url }}"
+    method: "DELETE"
+    headers: "{{ headers }}"
+    status_code: 204
+  loop: "{{ kong_plugin_update_st.results }}"
+  loop_control:
+    loop_var: result
+    label: "{{ label_name }}"
+  vars:
+    method: "{{ result.invocation.module_args.method }}"
+    url: "{{ result.invocation.module_args.url }}"
+    headers: "{{ result.invocation.module_args.headers }}"
+    label_name: "{{ result.plugin.name }}"
+  when:
+    - kong_plugin_update_st is failed
+    - result is failed
+    - method == "PATCH"
+  no_log: true
+
+- name: Retry failed (recreation)
+  uri:
+    url: "{{ server.kong_app_admin_url }}/services/{{ service.name }}/plugins"
+    method: "POST"
+    body: "{{ body | to_json }}"
+    headers: "{{ headers }}"
+    status_code: 200,201
+  loop: "{{ kong_plugin_update_st.results }}"
+  loop_control:
+    loop_var: result
+    label: "{{ label_name }}"
+  vars:
+    method: "{{ result.invocation.module_args.method }}"
+    headers: "{{ result.invocation.module_args.headers }}"
+    body: "{{ result.invocation.module_args.body }}"
+    label_name: "{{ result.plugin.name }}"
+  when:
+    - kong_plugin_update_st is failed
+    - result is failed
+    - method == "PATCH"
+  no_log: true
+
+- name: Fail otherwise
+  fail:
+    msg: "This plugin {{ result.plugin.name }} failed to be created"
+  loop: "{{ kong_plugin_update_st.results }}"
+  loop_control:
+    loop_var: result
+    label: "{{ label_name }}"
+  vars:
+    method: "{{ result.invocation.module_args.method }}"
+    label_name: "{{ result.plugin.name }}"
+  when:
+    - kong_plugin_update_st is failed
+    - result is failed
+    - method == "POST"
   no_log: true
