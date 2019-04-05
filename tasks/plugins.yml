@@ -26,7 +26,7 @@
     current_config: "{{ plugins_list | selectattr('name', 'equalto', plugin.name) | first |default({\"id\": ''}) }}"
     current_id_hash:
       id: "{{ current_config.id }}"
-    current_body: "{{ not current_id_hash.id  | ternary({}, current_id_hash) }}"
+    current_body: "{{ (not current_id_hash.id)  | ternary({}, current_id_hash) }}"
     exists_plugin: "{{ not current_id_hash.id  }}"
   when: not kong_app_service_plugins_check is skipped
   ignore_errors: true
@@ -58,7 +58,7 @@
   uri:
     url: "{{ server.kong_app_admin_url }}/services/{{ service.name }}/plugins"
     method: "POST"
-    body: "{{ body }}"
+    body: "{{ body | to_json }}"
     headers: "{{ headers }}"
     status_code: 200,201
   loop: "{{ kong_plugin_update_st.results }}"
