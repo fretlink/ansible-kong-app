@@ -1,9 +1,11 @@
 { mkRequestTermination =
-    ./mkRequestTermination.dhall
+	./mkRequestTermination.dhall
 , mkRequestTransformer =
-    ./mkRequestTransformer.dhall
+	./mkRequestTransformer.dhall
 , mkIPRestriction =
-    ./mkIPRestriction.dhall
+	./mkIPRestriction.dhall
 , CorrelationId =
-    ./CorrelationId.dhall
+	./CorrelationId.dhall
+, mkPreFunction =
+	./mkPreFunction.dhall
 }
