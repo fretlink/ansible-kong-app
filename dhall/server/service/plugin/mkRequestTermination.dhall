@@ -1,6 +1,6 @@
-    let Plugin = ./Plugin.dhall
+let Plugin = ./Plugin.dhall
 
-in  let config = constructors ./Config.dhall
+let config = ./Config.dhall
 
 in    λ(statusCode : Natural)
     → λ(contentType : Text)

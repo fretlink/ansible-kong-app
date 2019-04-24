@@ -1,8 +1,8 @@
-    let Server = ./Server.dhall
+let Server = ./Server.dhall
 
-in  let Service = ./service/Service.dhall
+let Service = ./service/Service.dhall
 
-in  let Vault = ./../Vault.dhall
+let Vault = ./../Vault.dhall
 
 in    λ(vault : Vault)
     → λ(adminUrl : Text)

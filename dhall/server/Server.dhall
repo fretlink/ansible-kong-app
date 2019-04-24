@@ -1,4 +1,4 @@
-    let Service = ./service/Service.dhall
+let Service = ./service/Service.dhall
 
 in  { kong_app_admin_url :
         Text
