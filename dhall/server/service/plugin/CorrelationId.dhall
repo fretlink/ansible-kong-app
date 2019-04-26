@@ -1,11 +1,11 @@
-    let Plugin = ./Plugin.dhall
+let Plugin = ./Plugin.dhall
 
-in  let config = constructors ./Config.dhall
+let config = ./Config.dhall
 
 in    { name =
-          "correlation-id"
-      , config =
-          config.CorrelationId
-          { header_name = "X-correl", echo_downstream = True }
-      }
-    : Plugin
+		  "correlation-id"
+	  , config =
+		  config.CorrelationId
+		  { header_name = "X-correl", echo_downstream = True }
+	  }
+	: Plugin
