@@ -76,6 +76,22 @@
     - method == "PATCH"
   no_log: true
 
+- name: Give info on errors
+  debug:
+      msg: "{{ info }}"
+  loop: "{{ kong_plugin_update_st.results }}"
+  loop_control:
+    label: "{{ item.plugin.name }}"
+  when:
+    - kong_plugin_update_st is failed
+    - item is failed
+    - item.plugin is defined
+    - item.plugin.name is defined
+    - item.json is defined
+    - item.json.message is defined
+  vars:
+    info: "{{ item.json.message }}"
+
 - name: Fail otherwise
   fail:
     msg: "This plugin {{ result.plugin.name }} failed to be created"
