@@ -1,5 +1,5 @@
 < CorrelationId :
-	{ header_name : Text, echo_downstream : Bool }
+	{ header_name : Text, echo_downstream : Bool, generator : Text }
 | RequestTransformer :
 	{ add : { headers : List Text } }
 | RequestTermination :
