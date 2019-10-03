@@ -1,5 +1,5 @@
-    let Plugin = ./plugin/Plugin.dhall
+let Plugin = ./plugin/Plugin.dhall
 
-in  let Route = ./route/Route.dhall
+let Route = ./Route.dhall
 
 in  { name : Text, url : Text, plugins : List Plugin, routes : List Route }
