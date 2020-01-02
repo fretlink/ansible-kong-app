@@ -1,25 +1,36 @@
 ---
 language: nix
+nix: 2.3.1
+
 
 # Use the new container infrastructure
 sudo: false
 
 install:
+  # Update nix channels
+  - nix-channel --add https://nixos.org/channels/nixpkgs-19.09-darwin nixpkgs
+  - nix-channel --remove nixpkgs-unstable
+  - nix-channel --update
+
   # Install ansible
-  - nix-env -i python2.7-ansible python2.7-ansible-lint
+  - nix-env -i python3 ansible ansible-lint
   - nix-env -if ./dhall-1.26.1.nix
 
   # Check ansible version
   - ansible --version
+  - ansible-lint --version
 
   # Create ansible.cfg with correct roles_path
   - printf '[defaults]\nroles_path=../' >ansible.cfg
+  # Basic webserver to fake a Kong
+  - |
+    ./tests/kong.py&
 
 script:
   # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
   - ansible-lint .
-  - ansible-playbook tests/test.yml -i tests/inventory -C -D
+  - ansible-playbook tests/test.yml -i tests/inventory -D
   - scripts/dhall_check.sh
 
 notifications:
