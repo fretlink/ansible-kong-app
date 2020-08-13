@@ -19,4 +19,4 @@ let
         '';
       };
 in
-  mkVersion "1.26.1" "0sl4r3mfairgd6kn26hs1r1lkh8rn992grd73078rhqf5w90ag05"
+  mkVersion "1.34.0" "0n64jkgbv7a3cmlv3gxpgc11p9b5w0k9nc0zm9am2pzmp6vm6b4n"
