@@ -1,20 +1,17 @@
 ---
 language: nix
-nix: 2.3.1
+nix: 2.3.4
+env:
+  - CUSTOM_NIX_PATH=nixpkgs=channel:nixos-20.09
 
-
-# Use the new container infrastructure
-sudo: false
+# Travis nix integration will install nix AFTER the environment variables are set
+# and the nix installer will overide NIX_PATH variable thus we need to re-export it
+before_install:
+  - export NIX_PATH="$CUSTOM_NIX_PATH"
 
 install:
-  # Update nix channels
-  - nix-channel --add https://nixos.org/channels/nixpkgs-19.09-darwin nixpkgs
-  - nix-channel --remove nixpkgs-unstable
-  - nix-channel --update
-
-  # Install ansible
-  - nix-env -i python3 ansible ansible-lint
-  - nix-env -if ./dhall-1.34.0.nix
+  # Install dependencies
+  - nix-env -i -f ./default.nix
 
   # Check ansible version
   - ansible --version
