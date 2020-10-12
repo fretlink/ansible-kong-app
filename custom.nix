@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {} }: with pkgs;
 
 let
-  mkVersion =
+  mkDhallVersion =
     version: sha256:
       stdenv.mkDerivation {
         name = "dhall-${version}";
@@ -19,4 +19,6 @@ let
         '';
       };
 in
-  mkVersion "1.34.0" "0n64jkgbv7a3cmlv3gxpgc11p9b5w0k9nc0zm9am2pzmp6vm6b4n"
+{
+  dhall = mkDhallVersion "1.34.0" "0n64jkgbv7a3cmlv3gxpgc11p9b5w0k9nc0zm9am2pzmp6vm6b4n";
+}
