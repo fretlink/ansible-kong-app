@@ -10,3 +10,6 @@
             services:
               - url: http://example.com
                 name: test
+                routes:
+                  - hosts: [my.kong.example]
+                    paths: [/]
