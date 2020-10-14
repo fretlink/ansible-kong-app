@@ -2,26 +2,16 @@
   set_fact:
     upstream: "{{ service.upstream }}"
 
-- name: Check if upstream exists
-  uri:
-    url: "{{ server.kong_app_admin_url }}/upstreams/{{ upstream.conf.name }}"
-    method: GET
-    headers:
-      apikey: "{{ server.kong_app_admin_apikey }}"
-    status_code: 200,404
-  register: kong_app_check_upstream
-
+# https://docs.konghq.com/2.1.x/admin-api/#update-or-create-upstream
 - name: Update or Create upstream
   uri:
-    url: "{{ server.kong_app_admin_url }}/upstreams/{{ exists_upstream | ternary('', upstream.conf.name) }}"
-    method: "{{ exists_upstream | ternary('POST', 'PATCH') }}"
+    url: "{{ server.kong_app_admin_url }}/upstreams/{{ upstream.conf.name) }}"
+    method: PUT
     body: "{{ upstream.conf | to_json }}"
     status_code: 200,201
     headers:
       apikey: "{{ server.kong_app_admin_apikey }}"
       Content-Type: application/json
-  vars:
-    exists_upstream: "{{ kong_app_check_upstream.status|default(404) == 404 }}"
 
 - name: Get upstream targets
   uri:

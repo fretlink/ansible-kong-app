@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from http.server import HTTPServer, CGIHTTPRequestHandler
+import random
 
 class SimpleHTTPRequestHandler(CGIHTTPRequestHandler):
     def do_GET(self):
@@ -14,6 +15,14 @@ class SimpleHTTPRequestHandler(CGIHTTPRequestHandler):
 
     def do_POST(self):
         self.send_response(201)
+        self.end_headers()
+        self.wfile.write(b'Hello, world!')
+
+    def do_PUT(self):
+        if bool(random.getrandbits(1)):
+            self.send_response(200)
+        else:
+            self.send_response(201)
         self.end_headers()
         self.wfile.write(b'Hello, world!')
 
