@@ -1,6 +1,8 @@
 kong-app
 =========
 
+[![Build Status](https://travis-ci.com/fretlink/ansible-kong-app.svg?token=D3nFpUxMu7vStDHwUNy4&branch=master)](https://travis-ci.com/fretlink/ansible-kong-app)
+
 This role aims at creating, on a remote kong, a list of services, routes and plugins needed by an app. The API calls are made from the ansible target host. If you use `hosts: localhost` as a target from within your playbook then all API calls will be done from your local machine.
 
 Requirements
@@ -42,17 +44,18 @@ None
 Example Playbook
 ----------------
 
-    - hosts: localhost
-      roles:
-         - { role: kong-app,
-             kong_servers:
-               - kong_app_admin_url: http://localhost:8001,
-                 services:
-                   - name: example,
-                     url: http://example.com,
-                     plugins: [],
-                     routes: [ { hosts: [my.kong.example], paths: [/] } ]
-           }
+```yaml
+- hosts: localhost
+  roles:
+     - role: kong-app,
+       kong_servers:
+         - kong_app_admin_url: http://localhost:8001,
+           services:
+             - name: example,
+               url: http://example.com,
+               plugins: [],
+               routes: [ { hosts: [my.kong.example], paths: [/] } ]
+```
 
 Tests
 ----
