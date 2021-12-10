@@ -29,7 +29,7 @@
     headers:
       apikey: "{{ server.kong_app_admin_apikey }}"
       Content-Type: application/json
-    status_code: 201
+    status_code: 200,201
   with_items: "{{ upstream.targets | default([]) }}"
   loop_control:
     loop_var: target
